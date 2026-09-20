@@ -3,7 +3,7 @@ const $=s=>document.querySelector(s), enc=new TextEncoder();
 let key=null,catalog=null,mode='given',epoch=0,observer=null;
 const urls=new Map(),pending=new Map();let active=0;const queue=[];
 async function limited(fn){if(active>=6)await new Promise(r=>queue.push(r));active++;try{return await fn();}finally{active--;queue.shift()?.();}}
-async function fetchBytes(file){const r=await fetch(file,{signal:AbortSignal.timeout(60000)});if(!r.ok)throw Error('下载失败，请重试 ('+r.status+')');return new Uint8Array(await r.arrayBuffer());}
+async function fetchBytes(file){const r=await fetch(file,{signal:AbortSignal.timeout(60000),cache:file==='config.json'?'no-store':'default'});if(!r.ok)throw Error('下载失败，请重试 ('+r.status+')');return new Uint8Array(await r.arrayBuffer());}
 async function decrypt(file,k=key){const b=await fetchBytes(file);return crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},k,b.slice(12));}
 async function asset(file,mime){if(urls.has(file))return urls.get(file);if(pending.has(file))return pending.get(file);const p=limited(async()=>{const url=URL.createObjectURL(new Blob([await decrypt(file)],{type:mime}));urls.set(file,url);return url;});pending.set(file,p);try{return await p;}finally{pending.delete(file);}}
 function node(tag,text,cls){const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;}
@@ -20,7 +20,7 @@ async function action(type,scope=$('#samples')){
 function render(){
  ++epoch;videos().forEach(v=>v.pause());observer?.disconnect();$('#samples').replaceChildren();$('#samples').className=mode;$('#status').textContent='';
  $('#scope').textContent=mode==='given'?'评估对象：generated camera（Human 为给定条件）':'评估对象：joint Human–Camera（人物与相机均生成）';
- document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+ document.querySelectorAll('[data-mode]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.mode===mode));b.textContent=(b.dataset.mode==='given'?'Given-Human':'Joint')+' · '+catalog.samples.filter(s=>s.mode===b.dataset.mode).length+' samples';});
  observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;observer.unobserve(e.target);asset(e.target.dataset.poster,'image/jpeg').then(url=>{if(e.target.isConnected)e.target.poster=url;}).catch(()=>{});}),{rootMargin:'500px'});
  catalog.samples.filter(s=>s.mode===mode).forEach((s,i)=>{
   const row=node('section',null,'sample'),head=node('div',null,'sample-head');head.append(node('h2',String(i+1).padStart(2,'0')+' · '+s.id));
