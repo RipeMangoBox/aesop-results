@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' blob:; media-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>AESOP · Results Review</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body><header><a class="brand" href="./">AESOP <span>Results Review</span></a><button id="lock" hidden>锁定 / Lock</button></header>
+<main><section id="gate"><div class="eyebrow">INVITATION ACCESS</div><h1>一起看看生成结果。</h1><p>输入邀请码，查看完整 Human–Camera 视频对比。</p><form id="unlock"><label for="code">邀请码 / Invitation code</label><input id="code" type="password" autocomplete="off" spellcheck="false" required placeholder="粘贴邀请码"><button id="enter" type="submit">进入观看 →</button></form><p id="gate-status" role="status"></p><small>邀请码仅在当前页面中使用，不会发送给服务器。</small></section>
+<section id="review" hidden><div class="intro"><div class="eyebrow">BLENDER V3 · VIDEO COMPARISON</div><h1>Human & Camera, in view.</h1><p>每个标签页展示全部 20 组。每个方法上方 Global，下方 Projection。空格播放／暂停当前页，也可逐组播放。</p></div>
+<nav aria-label="任务"><button data-mode="given" aria-pressed="true">Given-Human · 20 × 4 methods</button><button data-mode="joint" aria-pressed="false">Joint · 20 × 3 methods</button></nav>
+<div class="toolbar"><span id="scope"></span><div><button data-action="play">播放本页全部</button><button data-action="pause">暂停全部</button><button data-action="reset">全部归零</button></div></div><p id="status" role="status"></p><div id="samples"></div></section></main>
+<footer> AESOP · 视频结果预览 · 非问卷 </footer></body></html>
