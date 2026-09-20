@@ -1,0 +1,14 @@
+import fs from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+const source=process.argv[2];if(!source)throw Error('Usage: node publish.mjs /path/to/user_study');
+await fs.access('runtime/invite.txt');
+const run=(cmd,args)=>execFileSync(cmd,args,{stdio:'inherit'});
+run('git',['fetch','origin']);
+if(execFileSync('git',['rev-list','--count','HEAD..origin/main'],{encoding:'utf8'}).trim()!=='0')throw Error('Merge remote main before publishing.');
+run(process.execPath,['build.mjs',source]);
+run('git',['add','site','build.mjs','publish.mjs','README.md','test.cjs','audit-public.mjs','.gitignore']);
+if(execFileSync('git',['diff','--cached','--name-only'],{encoding:'utf8'}).trim())run('git',['commit','-m','Update results with the existing reusable invitation']);
+run('git',['push','origin','main']);
+const head=execFileSync('git',['subtree','split','--prefix=site'],{encoding:'utf8'}).trim();
+run('git',['push','origin',head+':gh-pages']);
+console.log('Published source. Wait for GitHub Pages deployment, then run test.cjs and audit-public.mjs. Invitation unchanged.');
